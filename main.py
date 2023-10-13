@@ -9,13 +9,16 @@ end = group*20+1
 #reading the data
 data = pd.read_excel('./data.xlsx',skiprows=start-1,nrows=(end-start), names=['x','y'])
 #normalizing the data - linear transformation used because its the most versatile method of normalization
-for i in range(len(data)):
-    data['x'][i] = (data['x'][i] - data['x'].min()) / (data['x'].max() - data['x'].min())
-    data['y'][i] = (data['y'][i] - data['y'].min()) / (data['y'].max() - data['y'].min())
+
+def linearReg(set):
+    for i in range(len(set)):
+        set['x'][i] = (set['x'][i] - set['x'].min()) / (set['x'].max() - set['x'].min())
+        set['y'][i] = (set['y'][i] - set['y'].min()) / (set['y'].max() - set['y'].min())
+        return set
 
 
 
-print(data)
+print(linearReg(data))
 
 # Now, plot the data
 plt.figure(figsize=(10, 6))  # Create a new figure, optionally specifying the size
