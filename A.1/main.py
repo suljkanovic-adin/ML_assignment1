@@ -6,7 +6,9 @@ import numpy as np
 group = 10
 start = (group-1)*20+2
 end = group*20+1
-
+# Parameters
+alpha = 1
+num_iterations = 1000
 
 #reading the data
 data = pd.read_excel('./data.xlsx',skiprows=start-1,nrows=(end-start), names=['x','y'])
@@ -56,40 +58,49 @@ X_b = get_x_b(normalized_data)
 y = normalized_data['y'].values.reshape(-1, 1)
 
 theta = np.zeros((2,1))
-alpha = 1
-num_iterations = 4
 
 # Keep a history of costs for plotting later
 J_history = []
 
 # Setup the figure and axis
-fig, ax = plt.subplots(figsize=(10, 6))
-ax.scatter(normalized_data['x'], normalized_data['y'], label='Data Points')
-line, = ax.plot(normalized_data['x'], np.zeros_like(normalized_data['y']), color='red', label='Regression Line')
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
 
-ax.set_title('Scatter plot of x versus y with Gradient Descent in Real-time')
-ax.set_xlabel('x')
-ax.set_ylabel('y')
-ax.grid(True)
-ax.legend()
+# Scatter plot for regression data
+ax1.scatter(normalized_data['x'], normalized_data['y'], label='Data Points')
+line, = ax1.plot(normalized_data['x'], np.zeros_like(normalized_data['y']), color='red', label='Regression Line')
+ax1.set_title('Scatter plot of x versus y with Gradient Descent in Real-time')
+ax1.set_xlabel('x')
+ax1.set_ylabel('y')
+ax1.grid(True)
+ax1.legend()
+
+# Initial setup for cost function plot
+ax2.set_xlim(0, num_iterations)
+ax2.set_ylim(0, compute_cost(X_b, y, theta) + 10)
+ax2.set_ylabel('Cost')
+ax2.set_title('Cost function over iterations')
+cost_line, = ax2.plot([], [], label='Cost Function', color='blue')
+ax2.legend()
 
 # Update function for animation
 def update(i):
     global theta
     theta, cost = single_step_gradient_descent(X_b, y, theta, alpha)
-    J_history.append(cost)  # Store the cost for this iteration
+    J_history.append(cost)
+    
+    # Update regression line
     line.set_ydata(X_b.dot(theta))
-    return line,
+    
+    ax2.clear()
+    ax2.plot(J_history, label='Cost Function')
+    ax2.set_title('Cost function over iterations')
+    ax2.set_xlabel('Iterations')
+    ax2.set_ylabel('Cost')
+    ax2.grid(True)
+    ax2.legend()
+    return line
 
 # Animate
 ani = FuncAnimation(fig, update, frames=num_iterations, repeat=False, interval=1)
-
-plt.show()
-
-# You can still plot the cost function over iterations as well
-plt.figure(figsize=(10, 6))
-plt.plot(J_history)
-plt.xlabel('Iterations')
-plt.ylabel('Cost')
-plt.title('Cost function over iterations')
+plt.tight_layout()
 plt.show()
