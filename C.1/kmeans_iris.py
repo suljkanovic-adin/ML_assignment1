@@ -1,8 +1,9 @@
 from sklearn.cluster import KMeans
-from sklearn.datasets import load_iris
+from sklearn.metrics import accuracy_score, confusion_matrix
 import pandas as pd
 import matplotlib.pyplot as plt
 
+#2.
 data = pd.read_csv("./iris.csv")
 
 #selecting rows, excluding the last column, because kMeans doesnt use labels
@@ -29,3 +30,22 @@ for i in range(len(properties)):
 
 plt.tight_layout()
 plt.show()
+
+#3.
+labels = []
+
+for cluster in range(3):  
+    true_labels = data[data['Cluster'] == cluster]['species']
+    most_common_label = true_labels.mode().iloc[0]
+    labels.append(most_common_label)
+
+data['MappedCluster'] = data['Cluster'].apply(lambda x: labels[x])
+
+accuracy = accuracy_score(data['species'], data['MappedCluster'])
+print(f"Accuracy: {accuracy:.2f}")
+
+conf_matrix = confusion_matrix(data['species'], data['MappedCluster'])
+print("Confusion Matrix:")
+print(conf_matrix)
+
+
