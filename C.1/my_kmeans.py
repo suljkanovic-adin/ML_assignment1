@@ -30,11 +30,23 @@ def kmeans(X, k, max_iters=100):
         centres = new_centres
     return labels, centres
 
+def assign_clusters_using_centroids(X, centroids):
+    distances = np.sqrt(((X - centroids[:, np.newaxis])**2).sum(axis=2))
+    return np.argmin(distances, axis=0)
+
+
+iris_data = pd.read_csv("./iris.csv")
+X_iris = iris_data.iloc[:, :-1].values
+
+_, centroids = kmeans(X_iris, 3)
+
 unknown_data = pd.read_csv("./unknown_species.csv")
 X_unknown = unknown_data.iloc[:, 1:5].values
-labels_custom, _ = kmeans(X_unknown, 3)
+labels_custom = assign_clusters_using_centroids(X_unknown, centroids)
 
 predicted_clusters_sklearn = pd.read_csv('skicit-learn_KMeans_predictions.csv')
+predicted_clusters_sklearn['CustomPredictionCluster'] = labels_custom
+
 labels_sklearn = predicted_clusters_sklearn['PredictionCluster'].values
 
 #the value of ARI is between -1 and 1
