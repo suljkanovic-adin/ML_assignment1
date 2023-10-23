@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from sklearn.metrics import adjusted_rand_score
 
 def initialize_centres(X, k):
     #randomly initialize the centres
@@ -28,11 +29,23 @@ def kmeans(X, k, max_iters=100):
         centres = new_centres
     return labels, centres
 
-data = pd.read_csv("./iris.csv")
-X = data.iloc[:, :-1].values
+unknown_data = pd.read_csv("./unknown_species.csv")
+X_unknown = unknown_data.iloc[:, 1:5].values
+labels_custom, _ = kmeans(X_unknown, 3)
 
-#executing the "home-made" K-Means clustering
-labels, centres = kmeans(X,3)
+predicted_clusters_sklearn = pd.read_csv('skicit-learn_KMeans_predictions.csv')
+labels_sklearn = predicted_clusters_sklearn['PredictionCluster'].values
 
+#the value of ARI is between -1 and 1
+#if close to 1, results are very similar
+#if close to 0, results are random
+#if negative, results are worse than random
+ari = adjusted_rand_score(labels_custom, labels_sklearn)
+print(f"Adjusted Rand Index comparing custom k-means with scikit-learn's KMeans: {ari:.2f}")
+
+#adding data to the existing csv file
+predicted_clusters_sklearn['CustomPredictionCluster'] = labels_custom
+
+predicted_clusters_sklearn.to_csv('skicit-learn_KMeans_predictions.csv', index=False)
 
 
