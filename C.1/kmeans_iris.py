@@ -73,6 +73,9 @@ silhouette_scores = silhouette_samples(X_unknown, unknown_data['PredictionCluste
 
 unknown_data['Silhouette'] = silhouette_scores
 
+#saving prediction clusters to a new file, so I can load it and compare it to prediction clusters of custom K-Means
+unknown_data[['id', 'PredictionCluster']].to_csv('skicit-learn_KMeans_predictions.csv', index=False)
+
 #printing the outcome of prediction clusters
 print("Here are the prediction clusters for uknown species:")
 print(unknown_data[['id', 'PredictionCluster']].to_string(index=False))
