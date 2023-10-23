@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.metrics import adjusted_rand_score
+from scipy.stats import mode
 
 def initialize_centres(X, k):
     #randomly initialize the centres
@@ -43,9 +44,23 @@ labels_sklearn = predicted_clusters_sklearn['PredictionCluster'].values
 ari = adjusted_rand_score(labels_custom, labels_sklearn)
 print(f"Adjusted Rand Index comparing custom k-means with scikit-learn's KMeans: {ari:.2f}")
 
-#adding data to the existing csv file
-predicted_clusters_sklearn['CustomPredictionCluster'] = labels_custom
+mapping = {}
+for cluster in range(3):
+    mask = (predicted_clusters_sklearn['CustomPredictionCluster'] == cluster)
+    mode_result = mode(predicted_clusters_sklearn[mask]['PredictionCluster'])
+    
+    #checking if mode_result[0] is scalar
+    if np.isscalar(mode_result[0]):
+        most_common = mode_result[0]
+    else:
+        most_common = mode_result[0][0]
+    
+    mapping[cluster] = most_common
 
+#applying the mapping to the CustomPredictionCluster column
+predicted_clusters_sklearn['AlignedCustomCluster'] = predicted_clusters_sklearn['CustomPredictionCluster'].map(mapping)
+
+#saving the updated DataFrame to the CSV file
 predicted_clusters_sklearn.to_csv('skicit-learn_KMeans_predictions.csv', index=False)
 
 
