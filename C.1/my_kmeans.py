@@ -34,12 +34,14 @@ def assign_clusters_using_centroids(X, centroids):
     distances = np.sqrt(((X - centroids[:, np.newaxis])**2).sum(axis=2))
     return np.argmin(distances, axis=0)
 
-
+#loading the iris dataset and extracting feature values 
 iris_data = pd.read_csv("./iris.csv")
 X_iris = iris_data.iloc[:, :-1].values
 
+#applying k-means clustering to the iris dataset and getting the centroids
 _, centroids = kmeans(X_iris, 3)
 
+#loading the uknown species, extracting feature values and assigning clusters to the data using the centroids
 unknown_data = pd.read_csv("./unknown_species.csv")
 X_unknown = unknown_data.iloc[:, 1:5].values
 labels_custom = assign_clusters_using_centroids(X_unknown, centroids)
@@ -56,6 +58,7 @@ labels_sklearn = predicted_clusters_sklearn['PredictionCluster'].values
 ari = adjusted_rand_score(labels_custom, labels_sklearn)
 print(f"Adjusted Rand Index comparing custom k-means with scikit-learn's KMeans: {ari:.2f}")
 
+#creating a mapping between custom clusters and the most common corresponding scikit-learn KMeans cluster
 mapping = {}
 for cluster in range(3):
     mask = (predicted_clusters_sklearn['CustomPredictionCluster'] == cluster)

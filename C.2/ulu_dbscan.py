@@ -6,19 +6,20 @@ from sklearn.metrics import silhouette_score
 from sklearn.decomposition import PCA
 
 #2
+#loading the ulu.csv dataset
 ulu_data = pd.read_csv("./ulu.csv")
 X = ulu_data.values
 
+#applying DBSCAN clustering
 dbscan_clustering = DBSCAN().fit(X)
-
 labels = dbscan_clustering.labels_
 
+#calculating the number of clusters
 n_of_clusters = len(set(labels)) - (1 if -1 in labels else 0)
 
 print(f"Number of clusters using DBSCAN is: {n_of_clusters}")
 
 #3
-
 fig, axes = plt.subplots(1, 3, figsize=(18, 6))
 
 axes[0].scatter(X[:, 0], X[:, 1], c=labels, cmap='rainbow', s=5)
@@ -40,6 +41,7 @@ plt.tight_layout()
 plt.show()
 
 #4
+#applying KMeans clustering with 8 clusters
 kmeans_clustering = KMeans(n_clusters=8)
 kmeans_labels = kmeans_clustering.fit_predict(X)
 
@@ -64,6 +66,7 @@ plt.tight_layout()
 plt.show()
 
 #5
+#calculating and printing silhouette scores for both DBScan and KMeans
 dbscan_silhouette = silhouette_score(X, labels)
 kmeans_silhouette = silhouette_score(X, kmeans_labels)
 

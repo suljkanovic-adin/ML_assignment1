@@ -4,7 +4,7 @@ from sklearn.metrics import silhouette_samples, silhouette_score
 import pandas as pd
 import matplotlib.pyplot as plt
 
-#2.
+#2
 data = pd.read_csv("./iris.csv")
 
 #selecting rows, excluding the last column, because kMeans doesnt use labels
@@ -32,7 +32,7 @@ for i in range(len(properties)):
 plt.tight_layout()
 plt.show()
 
-#3.
+#3
 labels = []
 
 for cluster in range(3):  
@@ -49,7 +49,7 @@ conf_matrix = confusion_matrix(data['species'], data['MappedCluster'])
 print("Confusion Matrix:")
 print(conf_matrix)
 
-#4.
+#4
 silhouette_vals = silhouette_samples(X, data['Cluster'])
 data['Silhouette'] = silhouette_vals
 
